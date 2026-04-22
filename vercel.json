@@ -4,32 +4,12 @@
     {
       "src": "api/index.py",
       "use": "@vercel/python"
-    },
-    {
-      "src": "api/webhook.py",
-      "use": "@vercel/python"
-    },
-    {
-      "src": "api/send_message.py",
-      "use": "@vercel/python"
     }
   ],
   "routes": [
     {
-      "src": "/api/index",
-      "dest": "/api/index.py"
-    },
-    {
-      "src": "/api/webhook",
-      "dest": "/api/webhook.py"
-    },
-    {
-      "src": "/api/send_message",
-      "dest": "/api/send_message.py"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/api/index.py"
+      "dest": "api/index.py"
     }
   ]
 }
