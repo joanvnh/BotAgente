@@ -1,40 +1,70 @@
 import os
 import json
+import requests
 from dotenv import load_dotenv
-from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
 load_dotenv()
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Comando /start"""
-    await update.message.reply_text("¡Hola! Soy tu bot de Telegram. 👋")
-
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Responde con hola a cualquier mensaje"""
-    await update.message.reply_text("¡Hola!")
-
-async def handle_webhook(request):
-    """Maneja los webhooks de Telegram"""
-    try:
-        data = await request.json()
-        update = Update.de_json(data, None)
-        
-        app = Application.builder().token(TOKEN).build()
-        app.add_handler(CommandHandler("start", start))
-        app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
-        
-        await app.process_update(update)
-        return {"ok": True}
-    except Exception as e:
-        print(f"Error: {e}")
-        return {"ok": False, "error": str(e)}
-
-async def handler(request):
-    """Manejador principal para Vercel"""
+def handler(request):
+    """Manejador del webhook de Telegram para Vercel"""
+    
+    # GET request - verifica que el bot está funcionando
+    if request.method == "GET":
+        return {
+            "statusCode": 200,
+            "body": json.dumps({"ok": True, "message": "Bot is running"})
+        }
+    
+    # POST request - procesa mensajes de Telegram
     if request.method == "POST":
-        return await handle_webhook(request)
-    return {"ok": True, "message": "Bot is running"}
+        try:
+            data = request.json
+            
+            # Verifica que sea un mensaje
+            if "message" not in data:
+                return {
+                    "statusCode": 200,
+                    "body": json.dumps({"ok": True})
+                }
+            
+            message = data["message"]
+            chat_id = message["chat"]["id"]
+            text = message.get("text", "")
+            
+            # Responde "¡Hola!" a cualquier mensaje
+            if text:
+                send_message(chat_id, "¡Hola! 👋")
+            
+            return {
+                "statusCode": 200,
+                "body": json.dumps({"ok": True})
+            }
+            
+        except Exception as e:
+            print(f"Error: {e}")
+            return {
+                "statusCode": 500,
+                "body": json.dumps({"ok": False, "error": str(e)})
+            }
+    
+    return {
+        "statusCode": 405,
+        "body": json.dumps({"error": "Method not allowed"})
+    }
+
+def send_message(chat_id, text):
+    """Envía un mensaje a través de la API de Telegram"""
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+    data = {
+        "chat_id": chat_id,
+        "text": text
+    }
+    try:
+        response = requests.post(url, json=data)
+        return response.status_code == 200
+    except Exception as e:
+        print(f"Error al enviar mensaje: {e}")
+        return False
