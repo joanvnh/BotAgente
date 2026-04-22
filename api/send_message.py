@@ -5,7 +5,7 @@ import requests
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-def handler(request):
+def main(request):
     if not TOKEN or not CHAT_ID:
         return {"statusCode": 400}
     

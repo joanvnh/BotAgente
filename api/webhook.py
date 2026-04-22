@@ -8,7 +8,7 @@ def send_msg(chat_id, text):
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
     requests.post(url, json={"chat_id": chat_id, "text": text})
 
-def handler(request):
+def main(request):
     if request.method == "GET":
         return {"statusCode": 200, "body": "Bot is running"}
     
