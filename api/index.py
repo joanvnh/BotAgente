@@ -27,7 +27,8 @@ def send_message():
     
     try:
         url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-        requests.post(url, json={"chat_id": CHAT_ID, "text": "¡Hola! Mensaje automático cada 30 minutos."})
-        return "Message sent"
+        payload = {"chat_id": CHAT_ID, "text": "¡Hola! Mensaje automático cada 30 minutos."}
+        resp = requests.post(url, json=payload)
+        return f"Message sent: {resp.text}"
     except Exception as e:
         return f"Error: {str(e)}"
