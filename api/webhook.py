@@ -21,7 +21,11 @@ def handler(request):
     # POST request - procesa mensajes de Telegram
     if request.method == "POST":
         try:
-            data = request.json
+            # Parsear el JSON del request
+            if isinstance(request.body, bytes):
+                data = json.loads(request.body.decode())
+            else:
+                data = json.loads(request.body)
             
             # Verifica que sea un mensaje
             if "message" not in data:
@@ -46,8 +50,8 @@ def handler(request):
         except Exception as e:
             print(f"Error: {e}")
             return {
-                "statusCode": 500,
-                "body": json.dumps({"ok": False, "error": str(e)})
+                "statusCode": 200,
+                "body": json.dumps({"ok": True})
             }
     
     return {
