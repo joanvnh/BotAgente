@@ -16,16 +16,20 @@
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "api/index.py"
+      "src": "/api/index",
+      "dest": "/api/index.py"
     },
     {
       "src": "/api/webhook",
-      "dest": "api/webhook.py"
+      "dest": "/api/webhook.py"
     },
     {
       "src": "/api/send_message",
-      "dest": "api/send_message.py"
+      "dest": "/api/send_message.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.py"
     }
   ]
 }
